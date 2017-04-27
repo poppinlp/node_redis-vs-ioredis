@@ -6,84 +6,39 @@ const config = {
 
 const nodeRedis = require('redis').createClient(config);
 const ioredis = new require('ioredis')(config);
+
 const TEST_LEN = 20000;
+const TEST_DATA = {
+	string: 'hello world',
+	number: 0,
+	hash: {
+		foo: 'bar',
+		hello: 'world'
+	}
+};
+
+const units = [{
+	name: 'set',
+	type: 'string'
+ }, {
+	name: 'get',
+	type: 'string'
+ }, {
+	name: 'hmset',
+	type: 'hash'
+ }, {
+	name: 'hgetall',
+	type: 'hash'
+ }];
 
 (async () => {
+	const unitsLen = units.length;
 
-    await (async () => {
-        console.time('node_redis set');
-
-        let len = TEST_LEN;
-        while (len--) {
-            await (new Promise(resolve => {
-                nodeRedis.set('node_redis', 1, resolve);
-            }));
-        }
-
-        console.timeEnd('node_redis set');
-    })();
-
-    await (async () => {
-        console.time('ioredis set');
-
-        let len = TEST_LEN;
-        while (len--) {
-            await (ioredis.set('ioredis', 1));
-        }
-
-        console.timeEnd('ioredis set');
-    })();
-
-    await (async () => {
-        console.time('ioredis set pipeline');
-
-        let len = TEST_LEN;
-        let pipeline = ioredis.pipeline();
-        while (len--) {
-            pipeline.set('ioredis', 1);
-        }
-        await (pipeline.exec());
-
-        console.timeEnd('ioredis set pipeline');
-    })();
-
-    await (async () => {
-        console.time('node_redis get');
-
-        let len = TEST_LEN;
-        while (len--) {
-            await (new Promise(resolve => {
-                nodeRedis.get('node_redis:1', resolve);
-            }));
-        }
-
-        console.timeEnd('node_redis get');
-    })();
-
-    await (async () => {
-        console.time('ioredis get');
-
-        let len = TEST_LEN;
-        while (len--) {
-            await (ioredis.get('ioredis'));
-        }
-
-        console.timeEnd('ioredis get');
-    })();
-
-    await (async () => {
-        console.time('ioredis get pipeline');
-
-        let len = TEST_LEN;
-        let pipeline = ioredis.pipeline();
-        while (len--) {
-            pipeline.get('ioredis');
-        }
-        await (pipeline.exec());
-
-        console.timeEnd('ioredis get pipeline');
-    })();
-
+	for (let i = 0; i < unitsLen; i++) {
+		const {name, type} = units[i];
+		const tasks = require(`./benchmarks/${name}.js`)({TEST_LEN, TEST_DATA, nodeRedis, ioredis, type});
+		while (tasks.length) await tasks.shift()();
+	}
 })().then(() => {
     nodeRedis.quit();
     ioredis.quit();

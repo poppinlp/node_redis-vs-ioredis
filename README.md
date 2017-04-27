@@ -10,6 +10,8 @@ First of all i must say ioredis is a real full-featured redis client right now. 
 
 I use [hiredis](https://github.com/redis/hiredis) to improve parser performance.
 
+Your node version should newer than `7.6.0` since banchmark script use `async` and `await`.
+
 ## Run
 
 1. Use `git clone git@github.com:poppinlp/node_redis-vs-ioredis.git` to clone this repo to local.
@@ -29,12 +31,18 @@ I do this benchmark test on my PC whose hardware are:
 I got these output:
 
 ```
-node_redis set: 836.005ms
-ioredis set: 966.789ms
-ioredis set pipeline: 147.655ms
-node_redis get: 801.577ms
-ioredis get: 903.011ms
-ioredis get pipeline: 128.095ms
+node_redis set: 823.151ms
+ioredis set: 928.765ms
+ioredis set with pipeline: 163.151ms
+node_redis get: 791.336ms
+ioredis get: 896.413ms
+ioredis get with pipeline: 129.523ms
+node_redis hmset: 833.925ms
+ioredis hmset: 1074.491ms
+ioredis hmset with pipeline: 165.686ms
+node_redis hgetall: 856.102ms
+ioredis hgetall: 1032.495ms
+ioredis hgetall with pipeline: 159.328ms
 ```
 
 Welcome PR to makes this not tooooo simple >.<

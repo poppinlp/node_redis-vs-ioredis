@@ -14,6 +14,10 @@ cluster-key-slot@^1.0.6:
   version "1.0.8"
   resolved "http://registry.npm.taobao.org/cluster-key-slot/download/cluster-key-slot-1.0.8.tgz#7654556085a65330932a2e8b5976f8e2d0b3e414"
 
+co@^4.6.0:
+  version "4.6.0"
+  resolved "http://registry.npm.taobao.org/co/download/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
+
 debug@^2.2.0:
   version "2.6.4"
   resolved "http://registry.npm.taobao.org/debug/download/debug-2.6.4.tgz#7586a9b3c39741c0282ae33445c4e8ac74734fe0"
