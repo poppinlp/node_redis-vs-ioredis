@@ -12,8 +12,10 @@ I use [hiredis](https://github.com/redis/hiredis) to improve parser performance.
 
 ## Run
 
-- Use `yarn` or `npm i` to install dependencies
-- Use `npm test` to start benchmark
+1. Use `git clone git@github.com:poppinlp/node_redis-vs-ioredis.git` to clone this repo to local.
+1. Use `yarn` or `npm i` to install dependencies.
+1. Use `redis-server` to start redis server local with no password.
+1. Use `npm test` to start benchmark.
 
 ## Result
 
