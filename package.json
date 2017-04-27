@@ -1,0 +1,29 @@
+{
+  "name": "node_redis-vs-ioredis",
+  "version": "0.0.1",
+  "description": "A simple benchmark for node_redis and ioredis.",
+  "main": "benchmark.js",
+  "scripts": {
+    "test": "node benchmark.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/poppinlp/node_redis-vs-ioredis.git"
+  },
+  "keywords": [
+    "nodeRedis",
+    "ioredis",
+    "benchmark"
+  ],
+  "author": "PoppinL",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/poppinlp/node_redis-vs-ioredis/issues"
+  },
+  "homepage": "https://github.com/poppinlp/node_redis-vs-ioredis#readme",
+  "dependencies": {
+    "hiredis": "^0.5.0",
+    "ioredis": "^2.5.0",
+    "redis": "^2.7.1"
+  }
+}
