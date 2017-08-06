@@ -8,9 +8,7 @@ This repo is a simple benchmark for them. Welcome PR to makes this not tooooo si
 
 First of all i must say ioredis is a real full-featured redis client right now. This is a really big PRO.
 
-I use [hiredis](https://github.com/redis/hiredis) to improve parser performance.
-
-Your node version should newer than `7.6.0` since banchmark script use `async` and `await`.
+I have no malice for both libraries. Just wanna do a performance benchmark.
 
 ## Run
 
@@ -23,26 +21,32 @@ Your node version should newer than `7.6.0` since banchmark script use `async` a
 
 I do this benchmark test on my PC whose hardware are:
 
-- System: OS X EI Capitan 10.11.6
-- Processor: 4 GHz Intel Core i7
-- Memory: 32 GB 1600 MHz DDR3
-- Graphics: AMD Radeon R9 M290X 2048 MB
+- OS: Ubuntu 17.04 64-bit
+- Processor: Intel® Core™ i5-4590 CPU @ 3.30GHz × 4 
+- Memory: 8GiB
+- Graphics: GeForce GTX 750 Ti/PCIe/SSE2
 
 I got these output:
 
 ```
-node_redis set: 823.151ms
-ioredis set: 928.765ms
-ioredis set with pipeline: 163.151ms
-node_redis get: 791.336ms
-ioredis get: 896.413ms
-ioredis get with pipeline: 129.523ms
-node_redis hmset: 833.925ms
-ioredis hmset: 1074.491ms
-ioredis hmset with pipeline: 165.686ms
-node_redis hgetall: 856.102ms
-ioredis hgetall: 1032.495ms
-ioredis hgetall with pipeline: 159.328ms
+node_redis set: 551.966ms
+ioredis set: 679.761ms
+ioredis set with pipeline: 156.763ms
+node_redis get: 537.623ms
+ioredis get: 640.003ms
+ioredis get with pipeline: 164.286ms
+node_redis hmset: 571.139ms
+ioredis hmset: 747.225ms
+ioredis hmset with pipeline: 208.449ms
+node_redis hgetall: 618.184ms
+ioredis hgetall: 736.134ms
+ioredis hgetall with pipeline: 243.452ms
+node_redis incr: 575.395ms
+ioredis incr: 667.477ms
+ioredis incr with pipeline: 170.836ms
+node_redis keys: 682.787ms
+ioredis keys: 746.521ms
+ioredis keys with pipeline: 243.462ms
 ```
 
 Welcome PR to makes this not tooooo simple >.<
