@@ -1,5 +1,5 @@
 module.exports = ({TEST_LEN, TEST_DATA, nodeRedis, ioredis, type}) => ([
-	// node_redis get
+    // node_redis get
     async () => {
         console.time('node_redis get');
 
@@ -13,7 +13,23 @@ module.exports = ({TEST_LEN, TEST_DATA, nodeRedis, ioredis, type}) => ([
         console.timeEnd('node_redis get');
     },
 
-	// ioredis get
+    // node_redis get with multi
+    async () => {
+        console.time('node_redis get with multi');
+
+        let len = TEST_LEN;
+        let multi = nodeRedis.multi();
+        while (len--) {
+            multi.get(`node_redis:${type}`);
+        }
+        await (new Promise(resolve => {
+            multi.exec(resolve);
+        }));
+
+        console.timeEnd('node_redis get with multi');
+    },
+
+    // ioredis get
     async () => {
         console.time('ioredis get');
 
@@ -25,7 +41,7 @@ module.exports = ({TEST_LEN, TEST_DATA, nodeRedis, ioredis, type}) => ([
         console.timeEnd('ioredis get');
     },
 
-	// ioredis get with pipeline
+    // ioredis get with pipeline
     async () => {
         console.time('ioredis get with pipeline');
 
@@ -37,5 +53,19 @@ module.exports = ({TEST_LEN, TEST_DATA, nodeRedis, ioredis, type}) => ([
         await (pipeline.exec());
 
         console.timeEnd('ioredis get with pipeline');
+    },
+
+    // ioredis get with multi
+    async () => {
+        console.time('ioredis get with multi');
+
+        let len = TEST_LEN;
+        let multi = ioredis.multi();
+        while (len--) {
+            multi.get(`ioredis:${type}`);
+        }
+        await (multi.exec());
+
+        console.timeEnd('ioredis get with multi');
     }
 ]);
