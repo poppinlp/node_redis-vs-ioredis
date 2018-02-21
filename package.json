@@ -22,8 +22,8 @@
   },
   "homepage": "https://github.com/poppinlp/node_redis-vs-ioredis#readme",
   "dependencies": {
-    "ioredis": "3.1.2",
-    "redis": "2.7.1"
+    "ioredis": "3.2.2",
+    "redis": "2.8.0"
   },
   "engines": {
     "node": ">= 6"
