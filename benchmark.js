@@ -1,3 +1,6 @@
+const NodeRedis = require('redis');
+const IORedis = require('ioredis');
+
 const REDIS_CONFIG = {
 	host: '127.0.0.1',
 	port: 6379,
@@ -13,8 +16,8 @@ const TEST_DATA = {
 	}
 };
 
-const nodeRedis = require('redis').createClient(REDIS_CONFIG);
-const ioredis = new require('ioredis')(REDIS_CONFIG);
+const nodeRedis = NodeRedis.createClient(REDIS_CONFIG);
+const ioredis = new IORedis(REDIS_CONFIG);
 
 const units = [{
 	name: 'set',
