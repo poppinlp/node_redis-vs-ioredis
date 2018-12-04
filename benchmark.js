@@ -1,3 +1,6 @@
+const NodeRedis = require('redis');
+const IORedis = require('ioredis');
+
 const REDIS_CONFIG = {
 	host: '127.0.0.1',
 	port: 6379,
@@ -13,8 +16,8 @@ const TEST_DATA = {
 	}
 };
 
-const nodeRedis = require('redis').createClient(REDIS_CONFIG);
-const ioredis = new require('ioredis')(REDIS_CONFIG);
+const nodeRedis = NodeRedis.createClient(REDIS_CONFIG);
+const ioredis = new IORedis(REDIS_CONFIG);
 
 const units = [{
 	name: 'set',
@@ -36,15 +39,25 @@ const units = [{
 	type: '*'
 }];
 
-(async () => {
-	const unitsLen = units.length;
-
-	for (let i = 0; i < unitsLen; i++) {
+const runTests = async (TEST_LEN, TEST_DATA, console) => {
+	for (let i = 0; i < units.length; i++) {
 		const { name, type } = units[i];
-		const tasks = require(`./benchmarks/${name}.js`)({ TEST_LEN, TEST_DATA, nodeRedis, ioredis, type });
-		while (tasks.length) await tasks.shift()();
+		const tasks = require(`./benchmarks/${name}.js`)({ TEST_LEN, TEST_DATA, nodeRedis, ioredis, type, console });
+		for (const task of tasks) {
+			await task();
+		}
 	}
-})().then(() => {
+};
+
+(async () => {
+	try {
+		// warm up a bit first
+		await runTests(100, TEST_DATA, { time() { }, timeEnd() { } });
+		// now go
+		await runTests(TEST_LEN, TEST_DATA, console);
+	} catch (e) {
+		console.error('ERR', e);
+	}
 	nodeRedis.quit();
 	ioredis.quit();
-});
+})();
