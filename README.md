@@ -28,25 +28,13 @@ I do this benchmark test on my PC whose hardware are:
 
 I got these output:
 
-```
-node_redis set: 551.966ms
-ioredis set: 679.761ms
-ioredis set with pipeline: 156.763ms
-node_redis get: 537.623ms
-ioredis get: 640.003ms
-ioredis get with pipeline: 164.286ms
-node_redis hmset: 571.139ms
-ioredis hmset: 747.225ms
-ioredis hmset with pipeline: 208.449ms
-node_redis hgetall: 618.184ms
-ioredis hgetall: 736.134ms
-ioredis hgetall with pipeline: 243.452ms
-node_redis incr: 575.395ms
-ioredis incr: 667.477ms
-ioredis incr with pipeline: 170.836ms
-node_redis keys: 682.787ms
-ioredis keys: 746.521ms
-ioredis keys with pipeline: 243.462ms
-```
+| Operation | node_redis Time(ms) | ioredis Time(ms) | ioredis with pipeline Time(ms) |
+| --- | --- |--- |--- |
+| set | 551.966 | 679.761 | 156.763 |
+| get | 537.623 | 640.003 | 164.286 |
+| hmset | 571.139 | 747.225 | 208.449 |
+| hgetall | 618.184 | 736.134 | 243.452 |
+| incr | 575.395 | 667.477 | 170.836|
+| keys | 682.787 | 746.521 | 243.462 |
 
 Welcome PR to makes this not tooooo simple >.<
