@@ -1,73 +1,39 @@
-module.exports = ({ TEST_LEN, TEST_DATA, nodeRedis, ioredis, type, console }) => {
-    const redisIncr = k => new Promise((resolve, reject) => nodeRedis.incr(k, (err, data) => err ? reject(err) : resolve(data)));
+module.exports = ({ nodeRedis, ioredis, type }) => {
+  const NODE_REDIS_KEY = `node_redis:${type}`;
+  const IOREDIS_KEY = `ioredis:${type}`;
 
-    return [
-        // node_redis incr
-        async () => {
-            console.time('node_redis incr');
-
-            let len = TEST_LEN;
-            while (len--) {
-                await redisIncr(`node_redis:${type}`);
-            }
-
-            console.timeEnd('node_redis incr');
-        },
-
-        // node_redis incr with multi
-        async () => {
-            console.time('node_redis incr with multi');
-
-            let len = TEST_LEN;
-            let multi = nodeRedis.multi();
-            while (len--) {
-                multi.incr(`node_redis:${type}`);
-            }
-            await (new Promise(resolve => {
-                multi.exec(resolve);
-            }));
-
-            console.timeEnd('node_redis incr with multi');
-        },
-
-        // ioredis incr
-        async () => {
-            console.time('ioredis incr');
-
-            let len = TEST_LEN;
-            while (len--) {
-                await (ioredis.incr(`ioredis:${type}`));
-            }
-
-            console.timeEnd('ioredis incr');
-        },
-
-        // ioredis incr with pipeline
-        async () => {
-            console.time('ioredis incr with pipeline');
-
-            let len = TEST_LEN;
-            let pipeline = ioredis.pipeline();
-            while (len--) {
-                pipeline.incr(`ioredis:${type}`);
-            }
-            await (pipeline.exec());
-
-            console.timeEnd('ioredis incr with pipeline');
-        },
-
-        // ioredis incr with multi
-        async () => {
-            console.time('ioredis incr with multi');
-
-            let len = TEST_LEN;
-            let multi = ioredis.multi();
-            while (len--) {
-                multi.incr(`ioredis:${type}`);
-            }
-            await (multi.exec());
-
-            console.timeEnd('ioredis incr with multi');
-        }
-    ];
+  return [
+    {
+      name: "node_redis incr",
+      loop: () => new Promise(resolve => nodeRedis.incr(NODE_REDIS_KEY, resolve))
+    },
+    {
+      name: "node_redis incr with multi",
+      beforeLoop: ctx => (ctx.multi = nodeRedis.multi()),
+      loop: ctx => ctx.multi.incr(NODE_REDIS_KEY),
+      afterLoop: ctx => new Promise(resolve => ctx.multi.exec(resolve))
+    },
+    {
+      name: "node_redis incr with batch",
+      beforeLoop: ctx => (ctx.batch = nodeRedis.batch()),
+      loop: ctx => ctx.batch.incr(NODE_REDIS_KEY),
+      afterLoop: ctx => new Promise(resolve => ctx.batch.exec(resolve))
+    },
+    {
+      name: "ioredis incr",
+      loop: () => ioredis.incr(IOREDIS_KEY)
+    },
+    {
+      name: "ioredis incr with multi",
+      beforeLoop: ctx => (ctx.multi = ioredis.multi()),
+      loop: ctx => ctx.multi.incr(IOREDIS_KEY),
+      afterLoop: ctx => ctx.multi.exec()
+    },
+    {
+      name: "ioredis incr with pipeline",
+      beforeLoop: ctx => (ctx.pipeline = ioredis.pipeline()),
+      loop: ctx => ctx.pipeline.incr(IOREDIS_KEY),
+      afterLoop: ctx => ctx.pipeline.exec()
+    }
+  ];
 };

@@ -4,7 +4,7 @@
   "description": "A simple benchmark for node_redis and ioredis.",
   "main": "benchmark.js",
   "scripts": {
-    "test": "node benchmark.js"
+    "benchmark": "node benchmark.js"
   },
   "repository": {
     "type": "git",
@@ -22,10 +22,10 @@
   },
   "homepage": "https://github.com/poppinlp/node_redis-vs-ioredis#readme",
   "dependencies": {
-    "ioredis": "^4.2.0",
+    "ioredis": "^4.14.0",
     "redis": "2.8.0"
   },
   "engines": {
-    "node": ">= 6"
+    "node": ">= 8"
   }
 }

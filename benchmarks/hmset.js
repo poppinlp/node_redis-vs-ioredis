@@ -1,73 +1,39 @@
-module.exports = ({ TEST_LEN, TEST_DATA, nodeRedis, ioredis, type, console }) => {
-    const redisHMSet = (k, o) => new Promise((resolve, reject) => nodeRedis.hmset(k, o, (err, data) => err ? reject(err) : resolve(data)));
+module.exports = ({ TEST_DATA, nodeRedis, ioredis, type }) => {
+  const NODE_REDIS_KEY = `node_redis:${type}`;
+  const IOREDIS_KEY = `ioredis:${type}`;
 
-    return [
-        // node_redis hmset
-        async () => {
-            console.time('node_redis hmset');
-
-            let len = TEST_LEN;
-            while (len--) {
-                await redisHMSet(`node_redis:${type}`, TEST_DATA.hash);
-            }
-
-            console.timeEnd('node_redis hmset');
-        },
-
-        // node_redis hmset with multi
-        async () => {
-            console.time('node_redis hmset with multi');
-
-            let len = TEST_LEN;
-            let multi = nodeRedis.multi();
-            while (len--) {
-                multi.hmset(`node_redis:${type}`, TEST_DATA.hash);
-            }
-            await (new Promise(resolve => {
-                multi.exec(resolve);
-            }));
-
-            console.timeEnd('node_redis hmset with multi');
-        },
-
-        // ioredis hmset
-        async () => {
-            console.time('ioredis hmset');
-
-            let len = TEST_LEN;
-            while (len--) {
-                await (ioredis.hmset(`ioredis:${type}`, TEST_DATA.hash));
-            }
-
-            console.timeEnd('ioredis hmset');
-        },
-
-        // ioredis hmset with pipeline
-        async () => {
-            console.time('ioredis hmset with pipeline');
-
-            let len = TEST_LEN;
-            let pipeline = ioredis.pipeline();
-            while (len--) {
-                pipeline.hmset(`ioredis:${type}`, TEST_DATA.hash);
-            }
-            await (pipeline.exec());
-
-            console.timeEnd('ioredis hmset with pipeline');
-        },
-
-        // ioredis hmset with multi
-        async () => {
-            console.time('ioredis hmset with multi');
-
-            let len = TEST_LEN;
-            let multi = ioredis.multi();
-            while (len--) {
-                multi.hmset(`ioredis:${type}`, TEST_DATA.hash);
-            }
-            await (multi.exec());
-
-            console.timeEnd('ioredis hmset with multi');
-        }
-    ];
+  return [
+    {
+      name: 'node_redis hmset',
+      loop: () => new Promise(resolve => nodeRedis.hmset(NODE_REDIS_KEY, TEST_DATA.hash, resolve))
+    },
+    {
+      name: 'node_redis hmset with multi',
+      beforeLoop: ctx => ctx.multi = nodeRedis.multi(),
+      loop: ctx => ctx.multi.hmset(NODE_REDIS_KEY, TEST_DATA.hash),
+      afterLoop: ctx => new Promise(resolve => ctx.multi.exec(resolve))
+    },
+    {
+      name: 'node_redis hmset with batch',
+      beforeLoop: ctx => ctx.batch = nodeRedis.batch(),
+      loop: ctx => ctx.batch.hmset(NODE_REDIS_KEY, TEST_DATA.hash),
+      afterLoop: ctx => new Promise(resolve => ctx.batch.exec(resolve))
+    },
+    {
+      name: 'ioredis hmset',
+      loop: () => ioredis.hmset(IOREDIS_KEY, TEST_DATA.hash)
+    },
+    {
+      name: 'ioredis hmset with multi',
+      beforeLoop: ctx => ctx.multi = ioredis.multi(),
+      loop: ctx => ctx.multi.hmset(IOREDIS_KEY, TEST_DATA.hash),
+      afterLoop: ctx => ctx.multi.exec()
+    },
+    {
+      name: 'ioredis hmset with pipeline',
+      beforeLoop: ctx => ctx.pipeline = ioredis.pipeline(),
+      loop: ctx => ctx.pipeline.hmset(IOREDIS_KEY, TEST_DATA.hash),
+      afterLoop: ctx => ctx.pipeline.exec()
+    },
+  ];
 };

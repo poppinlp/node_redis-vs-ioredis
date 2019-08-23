@@ -1,73 +1,39 @@
-module.exports = ({ TEST_LEN, TEST_DATA, nodeRedis, ioredis, type, console }) => {
-    const redisGet = k => new Promise((resolve, reject) => nodeRedis.get(k, (err, data) => err ? reject(err) : resolve(data)));
+module.exports = ({ nodeRedis, ioredis, type }) => {
+  const NODE_REDIS_KEY = `node_redis:${type}`;
+  const IOREDIS_KEY = `ioredis:${type}`;
 
-    return [
-        // node_redis get
-        async () => {
-            console.time('node_redis get');
-
-            let len = TEST_LEN;
-            while (len--) {
-                await redisGet(`node_redis:${type}`);
-            }
-
-            console.timeEnd('node_redis get');
-        },
-
-        // node_redis get with multi
-        async () => {
-            console.time('node_redis get with multi');
-
-            let len = TEST_LEN;
-            let multi = nodeRedis.multi();
-            while (len--) {
-                multi.get(`node_redis:${type}`);
-            }
-            await (new Promise(resolve => {
-                multi.exec(resolve);
-            }));
-
-            console.timeEnd('node_redis get with multi');
-        },
-
-        // ioredis get
-        async () => {
-            console.time('ioredis get');
-
-            let len = TEST_LEN;
-            while (len--) {
-                await (ioredis.get(`ioredis:${type}`));
-            }
-
-            console.timeEnd('ioredis get');
-        },
-
-        // ioredis get with pipeline
-        async () => {
-            console.time('ioredis get with pipeline');
-
-            let len = TEST_LEN;
-            let pipeline = ioredis.pipeline();
-            while (len--) {
-                pipeline.get(`ioredis:${type}`);
-            }
-            await (pipeline.exec());
-
-            console.timeEnd('ioredis get with pipeline');
-        },
-
-        // ioredis get with multi
-        async () => {
-            console.time('ioredis get with multi');
-
-            let len = TEST_LEN;
-            let multi = ioredis.multi();
-            while (len--) {
-                multi.get(`ioredis:${type}`);
-            }
-            await (multi.exec());
-
-            console.timeEnd('ioredis get with multi');
-        }
-    ];
+  return [
+    {
+      name: "node_redis get",
+      loop: () => new Promise(resolve => nodeRedis.get(NODE_REDIS_KEY, resolve))
+    },
+    {
+      name: "node_redis get with multi",
+      beforeLoop: ctx => (ctx.multi = nodeRedis.multi()),
+      loop: ctx => ctx.multi.get(NODE_REDIS_KEY),
+      afterLoop: ctx => new Promise(resolve => ctx.multi.exec(resolve))
+    },
+    {
+      name: "node_redis get with batch",
+      beforeLoop: ctx => (ctx.batch = nodeRedis.batch()),
+      loop: ctx => ctx.batch.get(NODE_REDIS_KEY),
+      afterLoop: ctx => new Promise(resolve => ctx.batch.exec(resolve))
+    },
+    {
+      name: "ioredis get",
+      loop: () => ioredis.get(IOREDIS_KEY)
+    },
+    {
+      name: "ioredis get with multi",
+      beforeLoop: ctx => (ctx.multi = ioredis.multi()),
+      loop: ctx => ctx.multi.get(IOREDIS_KEY),
+      afterLoop: ctx => ctx.multi.exec()
+    },
+    {
+      name: "ioredis get with pipeline",
+      beforeLoop: ctx => (ctx.pipeline = ioredis.pipeline()),
+      loop: ctx => ctx.pipeline.get(IOREDIS_KEY),
+      afterLoop: ctx => ctx.pipeline.exec()
+    }
+  ];
 };
