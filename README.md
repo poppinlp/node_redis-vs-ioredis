@@ -14,7 +14,7 @@ I have no malice for both libraries. Just wanna do a performance benchmark.
 
 1. Use `git clone git@github.com:poppinlp/node_redis-vs-ioredis.git` to clone this repo to local.
 1. Use `yarn` or `npm i` to install dependencies.
-1. Use `redis-server` to start redis server local with no password.
+1. Use `redis-server` to start redis server local with no password. (or `docker compose up -d`)
 1. Use `yarn benchmark` or `npm run benchmark` to start benchmark.
 
 ## Result
