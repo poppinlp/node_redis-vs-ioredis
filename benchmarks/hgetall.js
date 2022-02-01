@@ -6,43 +6,40 @@ module.exports = ({ nodeRedis, ioredis, type }) => {
 		{
 			name: "node_redis hgetall",
 			obj: "node_redis",
-			loop: () =>
-				new Promise(resolve =>
-					nodeRedis.hgetall(NODE_REDIS_KEY, resolve)
-				)
+			loop: () => nodeRedis.hGetAll(NODE_REDIS_KEY),
 		},
 		{
 			name: "node_redis hgetall with multi",
 			obj: "node_redis",
-			beforeLoop: ctx => (ctx.multi = nodeRedis.multi()),
-			loop: ctx => ctx.multi.hgetall(NODE_REDIS_KEY),
-			afterLoop: ctx => new Promise(resolve => ctx.multi.exec(resolve))
+			beforeLoop: (ctx) => (ctx.multi = nodeRedis.multi()),
+			loop: (ctx) => ctx.multi.hGetAll(NODE_REDIS_KEY),
+			afterLoop: (ctx) => ctx.multi.exec(),
 		},
 		{
 			name: "node_redis hgetall with batch",
 			obj: "node_redis",
-			beforeLoop: ctx => (ctx.batch = nodeRedis.batch()),
-			loop: ctx => ctx.batch.hgetall(NODE_REDIS_KEY),
-			afterLoop: ctx => new Promise(resolve => ctx.batch.exec(resolve))
+			beforeLoop: (ctx) => (ctx.batch = nodeRedis.multi()),
+			loop: (ctx) => ctx.batch.hGetAll(NODE_REDIS_KEY),
+			afterLoop: (ctx) => ctx.batch.execAsPipeline(),
 		},
 		{
 			name: "ioredis hgetall",
 			obj: "ioredis",
-			loop: () => ioredis.hgetall(IOREDIS_KEY)
+			loop: () => ioredis.hgetall(IOREDIS_KEY),
 		},
 		{
 			name: "ioredis hgetall with multi",
 			obj: "ioredis",
-			beforeLoop: ctx => (ctx.multi = ioredis.multi()),
-			loop: ctx => ctx.multi.hgetall(IOREDIS_KEY),
-			afterLoop: ctx => ctx.multi.exec()
+			beforeLoop: (ctx) => (ctx.multi = ioredis.multi()),
+			loop: (ctx) => ctx.multi.hgetall(IOREDIS_KEY),
+			afterLoop: (ctx) => ctx.multi.exec(),
 		},
 		{
 			name: "ioredis hgetall with pipeline",
 			obj: "ioredis",
-			beforeLoop: ctx => (ctx.pipeline = ioredis.pipeline()),
-			loop: ctx => ctx.pipeline.hgetall(IOREDIS_KEY),
-			afterLoop: ctx => ctx.pipeline.exec()
-		}
+			beforeLoop: (ctx) => (ctx.pipeline = ioredis.pipeline()),
+			loop: (ctx) => ctx.pipeline.hgetall(IOREDIS_KEY),
+			afterLoop: (ctx) => ctx.pipeline.exec(),
+		},
 	];
 };

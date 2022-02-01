@@ -35,7 +35,9 @@ args.forEach((el, i, arr) => {
 	}
 });
 
-const nodeRedis = NodeRedis.createClient(REDIS_CONFIG);
+const nodeRedis = NodeRedis.createClient(
+	`redis://${REDIS_CONFIG.host}:${REDIS_CONFIG.port}`
+);
 const ioredis = new IORedis(REDIS_CONFIG);
 
 const units = [
@@ -78,6 +80,7 @@ const runTests = async (TEST_LEN, TEST_DATA, output) => {
 
 (async () => {
 	try {
+		await nodeRedis.connect();
 		// warm up a bit first
 		await runTests(100, TEST_DATA, false);
 		// now go
